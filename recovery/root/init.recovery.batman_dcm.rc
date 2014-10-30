@@ -1,0 +1,21 @@
+on init
+    export PATH /sbin:/system/bin
+    export LD_LIBRARY_PATH /system/lib
+
+    mkdir /mnt 0755 root system
+    mkdir /mnt/sdcard 0000 system system
+
+    symlink /mnt/sdcard /sdcard
+on post-fs
+    service rmt_storage /system/bin/rmt_storage
+	user root
+	disabled
+on boot
+    service sdcard /system/bin/sdcard /data/media 1023 1023
+	disabled
+
+on property:persist.fuse_sdcard=true
+    start sdcard
+
+on property:ro.emmc=1
+    start rmt_storage
